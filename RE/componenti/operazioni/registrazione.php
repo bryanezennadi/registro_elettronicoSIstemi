@@ -7,75 +7,76 @@ $nome = $_POST['nome'];
 $cognome = $_POST['cognome'];
 $residenza = $_POST['residenza'];
 $codice_fiscale = $_POST['codice_fiscale'];
+$ruolo = $_POST['ruolo'];
+$username_figlio = $_POST['username_figlio'] ?? null;
 
 // Parametri di connessione
 $servername = "localhost";
 $dbname = 'RE';
 
 try {
-    // Connessione al database MySQL
     $pdo = new PDO("mysql:host=$servername;dbname=$dbname", 'root', '');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Funzione per generare un numero casuale unico
-    function generaNumeroUnico($pdo) {
+    function generaNumeroUnico($pdo, $tabella, $colonna) {
         do {
-            $numeroCasuale = rand(1, PHP_INT_MAX); // Genera un numero casuale
-            // Verifica se il numero esiste già nel database
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM Credenziali WHERE id_credenziale = :id_credenziale");
-            $stmt->bindParam(':id_credenziale', $numeroCasuale);
-            $stmt->execute();
+            $numeroCasuale = random_int(1, 2147483646);
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM $tabella WHERE $colonna = ?");
+            $stmt->execute([$numeroCasuale]);
             $count = $stmt->fetchColumn();
-        } while ($count > 0); // Se il numero esiste già, rigenera il numero
+        } while ($count > 0);
         return $numeroCasuale;
     }
 
-    // Genera un numero unico
-    $id_credenziale = generaNumeroUnico($pdo);
-
-    // Hash della password
+    $id_credenziale = generaNumeroUnico($pdo, "Credenziali", "id_credenziale");
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-    // Preparazione della query SQL per inserire le credenziali
-    $query = "INSERT INTO RE.Credenziali (id_credenziale, username, password) VALUES (:id_credenziale, :username, :password)";
+    // Inserisci nella tabella Credenziali
+    $query = "INSERT INTO Credenziali (id_credenziale, username, password) VALUES (?, ?, ?)";
     $stmt = $pdo->prepare($query);
+    $stmt->execute([$id_credenziale, $username, $hashedPassword]);
 
-    // Associa i parametri
-    $stmt->bindParam(':id_credenziale', $id_credenziale);
-    $stmt->bindParam(':username', $username);
-    $stmt->bindParam(':password', $hashedPassword);
+    if ($ruolo === 'studente') {
+        // Inserimento come studente
+        $query = "INSERT INTO Studente (nome, cognome, data_nascita, residenza, codice_fiscale, id_credenziale)
+                  VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([$nome, $cognome, $data_nascita, $residenza, $codice_fiscale, $id_credenziale]);
 
-    // Esegui la query
-    $stmt->execute();
+    } elseif ($ruolo === 'genitore') {
+        // Inserimento come genitore
+        $id_genitore = generaNumeroUnico($pdo, "Genitore", "id_genitore");
 
-    // Inserisci i dati dello studente
-    $query = "INSERT INTO RE.Studente (nome, cognome, data_nascita, residenza, codice_fiscale, id_credenziale) 
-              VALUES (:nome, :cognome, :data_nascita, :residenza, :codicefiscale, :id_credenziale)";
-    $stmt = $pdo->prepare($query);
-    $stmt->bindParam(':nome', $nome);
-    $stmt->bindParam(':cognome', $cognome);
-    $stmt->bindParam(':data_nascita', $data_nascita);
-    $stmt->bindParam(':residenza', $residenza);
-    $stmt->bindParam(':codicefiscale', $codice_fiscale);
-    $stmt->bindParam(':id_credenziale', $id_credenziale);
-    $stmt->execute();
+        $query = "INSERT INTO Genitore (id_genitore, nome, cognome, data_nascita, residenza, codice_fiscale, id_credenziale)
+                  VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([$id_genitore, $nome, $cognome, $data_nascita, $residenza, $codice_fiscale, $id_credenziale]);
+
+        // Collega il genitore allo studente tramite username
+        if (!empty($username_figlio)) {
+            $stmt = $pdo->prepare("
+                UPDATE Studente
+                SET id_genitore = ?
+                WHERE id_credenziale = (
+                    SELECT id_credenziale FROM Credenziali WHERE username = ?
+                )");
+            $stmt->execute([$id_genitore, $username_figlio]);
+        }
+    }
 
 } catch (PDOException $e) {
-    // Gestisci eventuali errori di connessione o esecuzione
-    echo "Error: " . $e->getMessage();
+    echo "Errore: " . $e->getMessage();
     die();
 }
 ?>
-
 <!doctype html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Registrazione Effettuata</title>
 </head>
 <body>
 <p>Registrazione effettuata con successo!</p>
+<a href="../../file_visualizzati/login.php">Vai al login</a>
 </body>
 </html>

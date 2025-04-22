@@ -1,0 +1,173 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f7fa;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.form-registrazione {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 35px;
+    width: 100%;
+    max-width: 550px;
+    margin: 0 auto;
+}
+
+.form-titolo {
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.form-gruppo {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 500;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+    outline: none;
+}
+
+.radio-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.radio-input {
+    margin-right: 8px;
+    cursor: pointer;
+    accent-color: #4a90e2;
+    width: 18px;
+    height: 18px;
+}
+
+.radio-text {
+    font-size: 15px;
+}
+
+.campo-figlio {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin: 15px 0 20px;
+    border-left: 4px solid #4a90e2;
+    transition: all 0.3s ease;
+}
+
+.btn-submit {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    padding: 14px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.btn-submit:hover {
+    background-color: #3a7abf;
+}
+
+/* Stilizzazione per il campo data */
+input[type="date"].form-input {
+    font-family: inherit;
+    color: #333;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .form-registrazione {
+        padding: 25px 20px;
+    }
+
+    .form-titolo {
+        font-size: 24px;
+    }
+
+    .btn-submit {
+        padding: 12px;
+    }
+}
+.link-registrazione {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.link-registrazione a {
+    color: #4a90e2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.link-registrazione a:hover {
+    text-decoration: underline;
+}
+.link-login {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.link-login p {
+    color: #666;
+    font-size: 15px;
+}
+
+.link-login a {
+    color: #4a90e2;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.link-login a:hover {
+    color: #3a7abf;
+    text-decoration: underline;
+}
